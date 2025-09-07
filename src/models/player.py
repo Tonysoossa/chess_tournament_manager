@@ -15,7 +15,6 @@ class PlayerData:
 
 
 def load_players() -> list[PlayerData]:
-    """Charge les joueurs depuis le JSON et renvoie une liste de PlayerData."""
     if not DATA_PATH.exists():
         return []
     try:
@@ -28,7 +27,6 @@ def load_players() -> list[PlayerData]:
 
 
 def save_player(player: PlayerData) -> bool:
-    """Ajoute un joueur si le nationalId n'existe pas déjà."""
     players = load_players()
 
     for p in players:
