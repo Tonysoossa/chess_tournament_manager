@@ -1,0 +1,37 @@
+# --- Environnements virtuels ---
+venv/
+.env/
+env/
+*_env/
+.venv/
+
+# --- Fichiers Python compilés ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Logs et fichiers temporaires ---
+*.log
+*.pot
+*.tmp
+*.swp
+*.swo
+
+# --- Configs locales ---
+*.env
+*.ini
+*.cfg
+*.toml
+.DS_Store
+Thumbs.db
+
+# --- Outils d’édition ---
+.vscode/
+.idea/
+
+# --- Distribution / Build ---
+build/
+dist/
+*.egg-info/
+.eggs/
+data/
