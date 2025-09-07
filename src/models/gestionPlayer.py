@@ -1,6 +1,6 @@
 from models.player import PlayerData, save_player, delete_player
 from datetime import datetime
-from models.tournament import load_tournaments
+from models.tournament import gestion_tournament
 
 
 def validate_and_format_id(nationalId: str) -> str:
@@ -73,7 +73,7 @@ def gestion_player():
 
     elif choix == "3":
         print("Début du tournoi...")
-        load_tournaments()
+        gestion_tournament()
 
     else:
         print("❌ Choix invalide.")

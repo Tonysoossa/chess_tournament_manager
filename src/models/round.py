@@ -9,14 +9,16 @@ Match = Tuple[List[str | float], List[str | float]]
 class Round:
     name: str
     matchs: List[Match] = field(default_factory=list)
-    start_date: datetime = field(default_factory=datetime.now)
-    ending_date: datetime = None
+    start_date: str = field(
+        default_factory=lambda: datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+    )
+    ending_date: str = None
 
     def add_match(self, match: Match):
         self.matchs.append(match)
 
     def matchDone(self):
-        self.ending_date = datetime.now()
+        self.ending_date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     def __str__(self):
         resume = f"{self.name} (début: {self.start_date}"
