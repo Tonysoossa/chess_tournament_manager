@@ -17,7 +17,7 @@ __pycache__/
 *.swp
 *.swo
 
-# --- Configs locales ---
+# --- Configs locales & secrets ---
 *.env
 *.ini
 *.cfg
@@ -35,3 +35,15 @@ dist/
 *.egg-info/
 .eggs/
 data/
+
+# --- Tests & coverage ---
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# --- Linting / rapports ---
+.flake8
+.mypy_cache/
+pylint-report.html
+flake8-report/
