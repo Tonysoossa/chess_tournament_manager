@@ -21,5 +21,4 @@ class MatchData:
         self.score_2 = 0.5
 
     def to_tuple(self):
-        """format tuple ([joueur, score], [joueur, score])"""
         return ([self.j1, self.score_1], [self.j2, self.score_2])

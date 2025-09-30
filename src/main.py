@@ -1,7 +1,7 @@
-from models.gestionPlayer import gestion_player
 import os
 import json
 from pathlib import Path
+from controllers.player_controller import PlayerController
 
 
 def main(base_dir="../data"):
@@ -19,4 +19,5 @@ def main(base_dir="../data"):
 
 if __name__ == "__main__":
     main()
-    gestion_player()
+    controller = PlayerController()
+    controller.run()
