@@ -13,12 +13,17 @@ class Round:
         default_factory=lambda: datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     )
     ending_date: str = None
+    round_winner: str = ""  # "name (national_id)"
 
     def add_match(self, match: Match):
         self.matchs.append(match)
 
     def matchDone(self):
         self.ending_date = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+
+    def set_winner(self, winner: str):
+        """Définit le gagnant du round."""
+        self.round_winner = winner
 
     def __str__(self):
         resume = f"{self.name} (début: {self.start_date}"
@@ -27,4 +32,6 @@ class Round:
         resume += ")\n"
         for m in self.matchs:
             resume += f"- {m[0][0]} ({m[0][1]}) vs {m[1][0]} ({m[1][1]})\n"
+        if self.round_winner:
+            resume += f"🏆 Gagnant du round: {self.round_winner}\n"
         return resume

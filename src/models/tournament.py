@@ -18,6 +18,8 @@ class TournamentData:
     rounds_list: list = field(default_factory=list)
     registered_players: list[PlayerData] = field(default_factory=list)
     description: str = ""
+    player_scores: dict = field(default_factory=dict)  # {national_id: score}
+    tournament_winner: str = ""  # "name (national_id)"
 
 
 def save_tournament(data: TournamentData):

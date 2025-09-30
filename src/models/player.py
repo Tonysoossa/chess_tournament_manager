@@ -9,9 +9,9 @@ DATA_PATH = short_cut / "data" / "players.json"
 @dataclass
 class PlayerData:
     name: str
-    lastName: str
-    birthDate: str
-    nationalId: str
+    last_name: str
+    birth_date: str
+    national_id: str
 
 
 def load_players() -> list[PlayerData]:
@@ -30,7 +30,7 @@ def save_player(player: PlayerData) -> bool:
     players = load_players()
 
     for p in players:
-        if p.nationalId == player.nationalId:
+        if p.national_id == player.national_id:
             return False
 
     players.append(player)
@@ -42,10 +42,10 @@ def save_player(player: PlayerData) -> bool:
     return True
 
 
-def delete_player(nationalId: str) -> bool:
+def delete_player(national_id: str) -> bool:
     players = load_players()
 
-    new_players = [p for p in players if p.nationalId != nationalId]
+    new_players = [p for p in players if p.national_id != national_id]
 
     if len(new_players) == len(players):
         return False

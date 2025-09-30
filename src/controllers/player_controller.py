@@ -9,48 +9,50 @@ class PlayerController:
         self.view = PlayerView()
         self.tournament_controller = TournamentController()
 
-    def validate_and_format_id(self, nationalId: str) -> str:
+    @staticmethod
+    def validate_and_format_id(self, national_id: str) -> str:
         """Valide et formate l'ID national."""
-        if len(nationalId) != 7:
+        if len(national_id) != 7:
             raise ValueError("L'ID doit contenir exactement 7 caractères")
 
-        letters = nationalId[:2].upper()
-        digits = nationalId[2:]
+        letters = national_id[:2].upper()
+        digits = national_id[2:]
 
         if not letters.isalpha() or not digits.isdigit():
             raise ValueError("Format invalide : 2 lettres suivies de 5 chiffres")
 
         return letters + digits
 
-    def format_birthdate(self, raw_date: str) -> str:
+    @staticmethod
+    def format_birth_date(self, raw_date: str) -> str:
         """Formate la date de naissance."""
         try:
             dt = datetime.strptime(raw_date, "%Y%m%d")
             return dt.strftime("%Y/%m/%d")
         except ValueError:
-            raise ValueError("Date invalide, utilisez le format YYYYMMDD (sans separateur)")
+            raise ValueError("Date invalide, utilisez le format YYYYMMDD")
 
     def create_player(self):
         """Gère la création d'un joueur avec gestion d'erreurs."""
         while True:
             try:
-                name, lastName, birthDate, nationalId = self.view.get_player_info()
+                name, last_name, birth_date, national_id = self.view.get_player_info()
 
                 # Validation
-                nationalId = self.validate_and_format_id(nationalId)
-                birthDate = self.format_birthdate(birthDate)
+                national_id = self.validate_and_format_id(national_id)
+                birth_date = self.format_birth_date(birth_date)
 
-                lastName = lastName.capitalize()
+                last_name = last_name.capitalize()
                 name = name.capitalize()
 
-                joueur = PlayerData(name, lastName, birthDate, nationalId)
+                joueur = PlayerData(name, last_name, birth_date, national_id)
                 ok = save_player(joueur)
 
                 if ok:
-                    self.view.show_success(f"{joueur.name} {joueur.lastName} ajouté avec succès.")
+                    self.view.show_success(f"{joueur.name} {joueur.last_name} ajouté avec succès.")
                     return
                 else:
-                    self.view.show_error(f"Joueur avec ID {joueur.nationalId} déjà existant.")
+                    self.view.show_error(f"Joueur avec ID {joueur.national_id} déjà existant.")
 
                     retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
                     if retry != 'o':
@@ -71,16 +73,16 @@ class PlayerController:
         """Gère la suppression d'un joueur avec gestion d'erreurs."""
         while True:
             try:
-                nationalId = self.view.get_player_id_to_delete()
-                nationalId = self.validate_and_format_id(nationalId)
+                national_id = self.view.get_player_id_to_delete()
+                national_id = self.validate_and_format_id(national_id)
 
-                ok = delete_player(nationalId)
+                ok = delete_player(national_id)
 
                 if ok:
-                    self.view.show_success(f"Joueur avec ID {nationalId} supprimé avec succès.")
+                    self.view.show_success(f"Joueur avec ID {national_id} supprimé avec succès.")
                     return
                 else:
-                    self.view.show_error(f"Aucun joueur trouvé avec l'ID {nationalId}.")
+                    self.view.show_error(f"Aucun joueur trouvé avec l'ID {national_id}.")
 
                     retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
                     if retry != 'o':

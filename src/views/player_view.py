@@ -15,10 +15,10 @@ class PlayerView:
     def get_player_info():
         """Demande les informations du joueur."""
         name = input("Prénom : ").strip()
-        lastName = input("Nom : ").strip()
-        birthDate = input("Date de naissance (YYYYMMDD) : ").strip()
-        nationalId = input("Identifiant national (2 lettres + 5 chiffres) : ").strip()
-        return name, lastName, birthDate, nationalId
+        last_name = input("Nom : ").strip()
+        birth_date = input("Date de naissance (YYYYMMDD) : ").strip()
+        national_id = input("Identifiant national (2 lettres + 5 chiffres) : ").strip()
+        return name, last_name, birth_date, national_id
 
     @staticmethod
     def get_player_id_to_delete():
