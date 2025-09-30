@@ -11,19 +11,36 @@ class TournamentController:
     def __init__(self):
         self.view = TournamentView()
 
-    @staticmethod
+
+    def validate_and_format_id(self, national_id: str) -> str:
+        """Valide et formate l'ID national."""
+        national_id = national_id.strip()
+
+        if len(national_id) != 7:
+            raise ValueError(f"ID invalide '{national_id}' : doit contenir exactement 7 caractères")
+
+        letters = national_id[:2].upper()
+        digits = national_id[2:]
+
+        if not letters.isalpha() or not digits.isdigit():
+            raise ValueError(f"Format invalide '{national_id}' : 2 lettres suivies de 5 chiffres")
+
+        return letters + digits
+
+
     def format_date(self, input_date: str) -> str:
+        """Transforme une date YYYYMMDD en YYYY/MM/DD"""
         if len(input_date) == 8 and input_date.isdigit():
             return f"{input_date[:4]}/{input_date[4:6]}/{input_date[6:]}"
         raise ValueError("Date invalide, utilisez le format YYYYMMDD")
 
-    @staticmethod
+
     def initialize_scores(self, tournament: TournamentData):
         """Initialise les scores de tous les joueurs à 0."""
         for player in tournament.registered_players:
             tournament.player_scores[player.national_id] = 0.0
 
-    @staticmethod
+
     def update_scores(self, tournament: TournamentData, match_tuple):
         """Met à jour les scores après un match."""
         j1_name = match_tuple[0][0]
@@ -38,24 +55,29 @@ class TournamentController:
             elif player.name == j2_name:
                 tournament.player_scores[player.national_id] += j2_score
 
-    @staticmethod
-    def get_round_winner(self, tournament: TournamentData) -> tuple[str, str, float]:
-        """Retourne le gagnant actuel (nom, national_id, score)."""
+
+    def get_tournament_winners(self, tournament: TournamentData) -> list[tuple[str, str, float]]:
+        """Retourne la liste des gagnants (gère les ex aequo)."""
         if not tournament.player_scores:
-            return "", "", 0.0
+            return []
 
-        # Trouver le joueur avec le score le plus élevé
+        # Trouver le score maximum
         max_score = max(tournament.player_scores.values())
-        winner_id = [nid for nid, score in tournament.player_scores.items() if score == max_score][0]
 
-        # Trouver le joueur correspondant
+        # Trouver tous les joueurs avec ce score
+        winners = []
         for player in tournament.registered_players:
-            if player.national_id == winner_id:
-                return f"{player.name} {player.last_name}", winner_id, max_score
+            if tournament.player_scores.get(player.national_id) == max_score:
+                winners.append((
+                    f"{player.name} {player.last_name}",
+                    player.national_id,
+                    max_score
+                ))
 
-        return "", "", 0.0
+        return winners
 
-    def select_players_for_tournament(self) -> list[PlayerData]:
+
+    def select_players_for_tournament(self) -> list[PlayerData] | None:
         """Permet à l'utilisateur de choisir les joueurs via national_id avec gestion d'erreurs."""
         while True:
             try:
@@ -66,17 +88,28 @@ class TournamentController:
                     return []
 
                 self.view.show_available_players(all_players)
-                chosen_ids = self.view.get_player_ids()
-                chosen_ids = [x.strip().upper() for x in chosen_ids.split(",")]
+                chosen_ids_input = self.view.get_player_ids()
+                chosen_ids_raw = [x.strip() for x in chosen_ids_input.split(",")]
 
+                # Valider tous les IDs avant de continuer
+                validated_ids = []
+                for id_raw in chosen_ids_raw:
+                    try:
+                        validated_id = self.validate_and_format_id(id_raw)
+                        validated_ids.append(validated_id)
+                    except ValueError as e:
+                        self.view.show_error(str(e))
+                        raise ValueError("Un ou plusieurs IDs sont invalides")
+
+                # Récupérer les joueurs correspondants
                 registered = []
                 for p in all_players:
-                    if p.national_id.upper() in chosen_ids:
+                    if p.national_id.upper() in [vid.upper() for vid in validated_ids]:
                         registered.append(p)
 
                 if len(registered) < 2:
                     self.view.show_error("Il faut au moins 2 joueurs pour un tournoi.")
-                    retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                    retry = self.view.ask_retry()
                     if retry != 'o':
                         return []
                     continue
@@ -84,13 +117,18 @@ class TournamentController:
                 self.view.show_registered_players(registered)
                 return registered
 
+            except ValueError as e:
+                self.view.show_error(str(e))
+                retry = self.view.ask_retry()
+                if retry != 'o':
+                    return []
             except Exception as e:
                 self.view.show_error(f"Erreur lors de la sélection : {e}")
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return []
 
-    @staticmethod
+
     def players_pairs(self, players: list):
         """Retourne toutes les paires possibles de joueurs."""
         return list(combinations(players, 2))
@@ -139,22 +177,17 @@ class TournamentController:
 
                     except Exception as e:
                         self.view.show_error(f"Erreur lors de la saisie : {e}")
-                        retry = input("Voulez-vous réessayer ce match ? (o/n) : ").strip().lower()
+                        retry = self.view.ask_retry_match()
                         if retry != 'o':
                             break
 
         round_obj.matchDone()
-
-        # Déterminer le gagnant du round
-        winner_name, winner_id, winner_score = self.get_round_winner(data)
-        round_obj.set_winner(f"{winner_name} ({winner_id})")
-
         data.rounds_list.append(round_obj)
 
         # Afficher le résumé du round
         self.view.show_round_summary(round_obj.name, round_obj.matchs)
         self.view.show_scores(data.player_scores, data.registered_players)
-        self.view.show_round_winner(winner_name, winner_id)
+
 
     def simulate_tournament_manual(self, data: TournamentData):
         """Simule tous les rounds du tournoi avec résultats manuels."""
@@ -162,25 +195,32 @@ class TournamentController:
         self.initialize_scores(data)
 
         for r in range(1, data.rounds + 1):
-            print(f"\n{'=' * 50}")
-            print(f"Round {r}/{data.rounds}")
-            print(f"{'=' * 50}")
+            self.view.show_round_header(r, data.rounds)
             self.simulate_round_manual(data, r)
 
             if r < data.rounds:
-                continuer = input("\nContinuer au round suivant ? (o/n) : ").strip().lower()
+                continuer = self.view.ask_continue_next_round()
                 if continuer != 'o':
                     self.view.show_info("Tournoi interrompu.")
                     return False
 
-        # Déterminer le gagnant du tournoi
-        winner_name, winner_id, final_score = self.get_round_winner(data)
-        data.tournament_winner = f"{winner_name} ({winner_id})"
+        # Déterminer le(s) gagnant(s) du tournoi
+        winners = self.get_tournament_winners(data)
 
-        # Afficher le gagnant du tournoi
-        self.view.show_tournament_winner(winner_name, winner_id, final_score)
+        # Construire la chaîne pour tournament_winner
+        if len(winners) == 1:
+            winner_name, winner_id, _ = winners[0]
+            data.tournament_winner = f"{winner_name} ({winner_id})"
+        else:
+            # Format pour ex aequo : "Name1 (ID1), Name2 (ID2)"
+            winner_strings = [f"{name} ({wid})" for name, wid, _ in winners]
+            data.tournament_winner = ", ".join(winner_strings)
+
+        # Afficher le(s) gagnant(s) du tournoi
+        self.view.show_tournament_winners(winners)
 
         return True
+
 
     def create_tournament(self):
         """Fonction principale pour créer et simuler un tournoi avec gestion d'erreurs."""
@@ -225,11 +265,11 @@ class TournamentController:
 
             except ValueError as e:
                 self.view.show_error(str(e))
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return
             except Exception as e:
                 self.view.show_error(f"Erreur inattendue : {e}")
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return

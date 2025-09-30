@@ -9,7 +9,7 @@ class PlayerController:
         self.view = PlayerView()
         self.tournament_controller = TournamentController()
 
-    @staticmethod
+
     def validate_and_format_id(self, national_id: str) -> str:
         """Valide et formate l'ID national."""
         if len(national_id) != 7:
@@ -23,7 +23,7 @@ class PlayerController:
 
         return letters + digits
 
-    @staticmethod
+
     def format_birth_date(self, raw_date: str) -> str:
         """Formate la date de naissance."""
         try:
@@ -31,6 +31,7 @@ class PlayerController:
             return dt.strftime("%Y/%m/%d")
         except ValueError:
             raise ValueError("Date invalide, utilisez le format YYYYMMDD")
+
 
     def create_player(self):
         """Gère la création d'un joueur avec gestion d'erreurs."""
@@ -54,18 +55,18 @@ class PlayerController:
                 else:
                     self.view.show_error(f"Joueur avec ID {joueur.national_id} déjà existant.")
 
-                    retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                    retry = self.view.ask_retry()
                     if retry != 'o':
                         return
 
             except ValueError as e:
                 self.view.show_error(str(e))
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return
             except Exception as e:
                 self.view.show_error(f"Erreur inattendue : {e}")
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return
 
@@ -84,20 +85,21 @@ class PlayerController:
                 else:
                     self.view.show_error(f"Aucun joueur trouvé avec l'ID {national_id}.")
 
-                    retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                    retry = self.view.ask_retry()
                     if retry != 'o':
                         return
 
             except ValueError as e:
                 self.view.show_error(str(e))
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return
             except Exception as e:
                 self.view.show_error(f"Erreur inattendue : {e}")
-                retry = input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_retry()
                 if retry != 'o':
                     return
+
 
     def run(self):
         """Boucle principale du programme."""
@@ -120,11 +122,10 @@ class PlayerController:
                     self.view.show_error("Choix invalide. Veuillez choisir 1, 2, 3 ou 0.")
 
             except KeyboardInterrupt:
-                print("\n")
-                self.view.show_info("Programme interrompu. Au revoir !")
+                self.view.show_info("\nProgramme interrompu. Au revoir !")
                 break
             except Exception as e:
                 self.view.show_error(f"Erreur inattendue : {e}")
-                retry = input("Voulez-vous continuer ? (o/n) : ").strip().lower()
+                retry = self.view.ask_continue()
                 if retry != 'o':
                     break

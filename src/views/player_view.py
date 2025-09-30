@@ -26,6 +26,16 @@ class PlayerView:
         return input("Entrez l'identifiant national du joueur à supprimer : ").strip()
 
     @staticmethod
+    def ask_retry():
+        """Demande si l'utilisateur veut réessayer."""
+        return input("Voulez-vous réessayer ? (o/n) : ").strip().lower()
+
+    @staticmethod
+    def ask_continue():
+        """Demande si l'utilisateur veut continuer."""
+        return input("Voulez-vous continuer ? (o/n) : ").strip().lower()
+
+    @staticmethod
     def show_success(message: str):
         print(f"✅ {message}")
 
