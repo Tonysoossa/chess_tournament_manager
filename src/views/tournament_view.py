@@ -27,7 +27,9 @@ class TournamentView:
     @staticmethod
     def get_player_ids():
         """Demande les IDs des joueurs à inscrire."""
-        return input("\nEntrez les ID des joueurs à inscrire, séparés par des virgules : ").strip()
+        return input(
+            "\nEntrez les ID des joueurs à inscrire, séparés par des virgules : "
+        ).strip()
 
     @staticmethod
     def show_registered_players(players: list[PlayerData]):
@@ -36,12 +38,14 @@ class TournamentView:
         print(f"\n✅ Joueurs inscrits : {', '.join(names)}")
 
     @staticmethod
-    def show_match(p1_name: str, p2_name: str):
+    def show_match(p1_name: str, p2_name: str, p1_id: str = "", p2_id: str = ""):
         """Affiche les informations d'un match."""
-        print(f"\nMatch : {p1_name} vs {p2_name}")
+        p1_display = f"{p1_name} ({p1_id})" if p1_id else p1_name
+        p2_display = f"{p2_name} ({p2_id})" if p2_id else p2_name
+        print(f"\nMatch : {p1_display} vs {p2_display}")
         print(f"Entrez le résultat :")
-        print(f"1 = {p1_name} gagne")
-        print(f"2 = {p2_name} gagne")
+        print(f"1 = {p1_display} gagne")
+        print(f"2 = {p2_display} gagne")
         print(f"3 = nul")
 
     @staticmethod
@@ -61,7 +65,12 @@ class TournamentView:
         """Affiche le résumé d'un round."""
         print(f"\n=== {round_name} terminé ===")
         for m in matches:
-            print(f"- {m[0][0]} ({m[0][1]}) vs {m[1][0]} ({m[1][1]})")
+            # Format: ([j1_id, j1_name, j1_score], [j2_id, j2_name, j2_score])
+            j1_id, j1_name, j1_score = m[0][0], m[0][1], m[0][2]
+            j2_id, j2_name, j2_score = m[1][0], m[1][1], m[1][2]
+            print(
+                f"- {j1_name} ({j1_id}) [{j1_score}] vs {j2_name} ({j2_id}) [{j2_score}]"
+            )
 
     @staticmethod
     def show_scores(scores: dict, players: list[PlayerData]):
@@ -75,7 +84,9 @@ class TournamentView:
         for idx, (national_id, score) in enumerate(sorted_scores, 1):
             player = player_map.get(national_id)
             if player:
-                print(f"{idx}. {player.name} {player.last_name} ({national_id}) - {score} points")
+                print(
+                    f"{idx}. {player.name} {player.last_name} ({national_id}) - {score} points"
+                )
 
     @staticmethod
     def show_tournament_winners(winners: list[tuple[str, str, float]]):
