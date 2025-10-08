@@ -43,10 +43,10 @@ class TournamentView:
         p1_display = f"{p1_name} ({p1_id})" if p1_id else p1_name
         p2_display = f"{p2_name} ({p2_id})" if p2_id else p2_name
         print(f"\nMatch : {p1_display} vs {p2_display}")
-        print(f"Entrez le résultat :")
+        print("Entrez le résultat :")
         print(f"1 = {p1_display} gagne")
         print(f"2 = {p2_display} gagne")
-        print(f"3 = nul")
+        print("3 = nul")
 
     @staticmethod
     def get_match_result():
