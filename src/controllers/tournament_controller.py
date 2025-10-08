@@ -186,6 +186,7 @@ class TournamentController:
                             break
 
         round_obj.matchDone()
+        round_obj.calculate_winner()  # Calculer le gagnant du round
         data.rounds_list.append(round_obj)
 
         # Afficher le résumé du round
