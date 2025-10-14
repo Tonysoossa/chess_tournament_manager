@@ -46,3 +46,4 @@ class PlayerView:
     @staticmethod
     def show_info(message: str):
         print(f"ℹ️  {message}")
+        

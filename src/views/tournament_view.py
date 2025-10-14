@@ -93,12 +93,12 @@ class TournamentView:
         """Affiche le(s) gagnant(s) du tournoi."""
         print(f"\n{'=' * 60}")
         if len(winners) == 1:
-            print(f"🏆🏆🏆 GAGNANT DU TOURNOI 🏆🏆🏆")
+            print("🏆🏆🏆 GAGNANT DU TOURNOI 🏆🏆🏆")
             winner_name, winner_id, final_score = winners[0]
             print(f"{winner_name} ({winner_id})")
             print(f"Score final : {final_score} points")
         else:
-            print(f"🏆🏆🏆 GAGNANTS DU TOURNOI (EX AEQUO) 🏆🏆🏆")
+            print("🏆🏆🏆 GAGNANTS DU TOURNOI (EX AEQUO) 🏆🏆🏆")
             for winner_name, winner_id, final_score in winners:
                 print(f"- {winner_name} ({winner_id}) - {final_score} points")
         print(f"{'=' * 60}")
